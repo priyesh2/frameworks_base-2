@@ -163,10 +163,23 @@ public class SystemSensorManager extends SensorManager {
                 + MAX_LISTENER_COUNT);
         }
 
-        // Invariants to preserve:
-        // - one Looper per SensorEventListener
-        // - one Looper per SensorEventQueue
-        // We map SensorEventListener to a SensorEventQueue, which holds the looper
+        
+        if (sensor.getType() == Sensor.TYPE_PROXIMITY) {      
+            if ((android.os.Build.DEVICE.equals("RMX1901")) || (android.os.Build.DEVICE.equals("RMX1921"))) {
+     
+           String pkgName = mContext.getPackageName().toLowerCase();
+            if (!pkgName.contains("dialer") && !pkgName.equals("android")) {
+                Log.w(TAG, "Preventing " + pkgName + " from using " +
+                                "proximity sensor");
+                return false;
+            }
+          }
+     }
+
+// Invariants to preserve:
+  // - one Looper per SensorEventListener
+         // - one Looper per SensorEventQueue
+                // We map SensorEventListener to a SensorEventQueue, which holds the looper
         synchronized (mSensorListeners) {
             SensorEventQueue queue = mSensorListeners.get(listener);
             if (queue == null) {
